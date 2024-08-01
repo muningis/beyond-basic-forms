@@ -1,0 +1,16 @@
+# Dependencies
+node_modules
+
+# Local env files
+.env
+
+
+# Turbo
+.turbo
+
+# Build Outputs
+dist
+
+# Misc
+.DS_Store
+*.pem

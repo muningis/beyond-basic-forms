@@ -1,0 +1,24 @@
+{
+  "name": "beyond-basic-forms",
+  "private": true,
+  "scripts": {
+    "build": "bun run --bun turbo build",
+    "dev": "bun run --bun turbo dev",
+    "lint": "bun run --bun turbo lint",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "turbo": "2.0.11",
+    "typescript": "5.5.4",
+    "vitest": "2.0.5"
+  },
+  "packageManager": "bun@1.1.21",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "trustedDependencies": [
+    "@biomejs/biome",
+    "esbuild"
+  ]
+}

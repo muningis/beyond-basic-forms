@@ -39,7 +39,6 @@ export class Observer {
     this.isBatching = true;
     fn();
     this.isBatching = false;
-
     Object.keys(this.accumulatedChanges).forEach(id => {
       this.triggerCallbacks(id);
     });
@@ -47,23 +46,28 @@ export class Observer {
 
   private triggerCallbacks(id: string) {
     const changes = this.accumulatedChanges[id]!;
+
+    // Handle subscribers with specific change
     Object.keys(changes).forEach(change => {
       this.subscribers.forEach(subscriber => {
-        if (this.isMatch(subscriber.key, { id, change })) {
-          if (subscriber.key.change) {
-            subscriber.callback({ [change]: changes[change] });
-          } else {
-            subscriber.callback(changes);
-          }
+        if (subscriber.key.change && this.isMatch(subscriber.key, { id, change })) {
+          subscriber.callback({ [change]: changes[change] });
         }
       });
     });
+
+    // Handle subscribers without specific change (only once)
+    this.subscribers.forEach(subscriber => {
+      if (!subscriber.key.change && this.isMatch(subscriber.key, { id })) {
+        subscriber.callback(changes);
+      }
+    });
+
     delete this.accumulatedChanges[id];
   }
 
-  private isMatch(subscriberFilter: Subscription, publishFilter: Required<Subscription>): boolean {
+  private isMatch(subscriberFilter: Subscription, publishFilter: Subscription): boolean {
     return Object.entries(subscriberFilter).every(([key, value]) => {
-      console.log(key, value, subscriberFilter, publishFilter)
       if (key === 'change' && subscriberFilter.change && publishFilter.change) {
         return subscriberFilter.change === publishFilter.change;
       }

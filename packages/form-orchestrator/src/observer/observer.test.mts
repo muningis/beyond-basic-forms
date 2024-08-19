@@ -56,4 +56,46 @@ describe("#Observer()", () => {
 
     expect(spy).not.toHaveBeenLastCalledWith("John!");
   });
+
+  it.only("should be able to maintain three different subscriptions and unsubscribing from one of them", () => {
+    const observer = new Observer();
+
+    const spyOnValue = vitest.fn();
+    const spyOnVisible = vitest.fn();
+    const spyOnAll = vitest.fn();
+
+    observer.sub({ id: "first_name", change: "value" }, spyOnValue);
+    observer.sub({ id: "first_name", change: "visible" }, spyOnVisible);
+    const unsubSpyOnAll = observer.sub({ id: "first_name" }, spyOnAll);
+
+    observer.batch(() => {
+      observer.pub({ id: "first_name", change: "value" }, "John");
+      observer.pub({ id: "first_name", change: "visible" }, true);
+    });
+
+    expect(spyOnAll).toHaveBeenCalledTimes(1);
+    expect(spyOnAll).toHaveBeenCalledWith({ value: "John", visible: true });
+
+    expect(spyOnValue).toHaveBeenCalledTimes(1);
+    expect(spyOnValue).toHaveBeenCalledWith({ value: "John" });
+
+    expect(spyOnVisible).toHaveBeenCalledTimes(1);
+    expect(spyOnVisible).toHaveBeenCalledWith({ visible: true });
+
+    unsubSpyOnAll();
+
+    observer.batch(() => {
+      observer.pub({ id: "first_name", change: "value" }, "");
+      observer.pub({ id: "first_name", change: "visible" }, false);
+    });
+
+    expect(spyOnAll).toHaveBeenCalledTimes(1);
+    expect(spyOnAll).toHaveBeenCalledWith({ value: "John", visible: true });
+
+    expect(spyOnValue).toHaveBeenCalledTimes(2);
+    expect(spyOnValue).toHaveBeenCalledWith({ value: "" });
+
+    expect(spyOnVisible).toHaveBeenCalledTimes(2);
+    expect(spyOnVisible).toHaveBeenCalledWith({ visible: false });
+  });
 })

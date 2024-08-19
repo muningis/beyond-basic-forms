@@ -12,5 +12,16 @@ describe("#Observer()", () => {
     observer.pub("vitest", "Hello world!");
 
     expect(spy).toHaveBeenLastCalledWith("Hello world!");
-  })
+  });
+  it("should be able to unsubsubscribe from an event", () => {
+    const observer = new Observer();
+
+    const spy = vitest.fn();
+    const unsub = observer.sub("vitest", spy);
+    unsub();
+
+    observer.pub("vitest", "Hello world!");
+
+    expect(spy).not.toHaveBeenLastCalledWith("Hello world!");
+  });
 })

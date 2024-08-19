@@ -1,10 +1,17 @@
+interface Subscription {
+  id: string;
+  change?: string;
+}
+
 interface Subscriber {
-  key: string;
+  key: Subscription;
   callback: (data: any) => void;
 }
+
 export class Observer {
   private subscribers: Subscriber[] = [];
-  sub(key: string, callback: (data: any) => void) {
+
+  sub(key: Subscription, callback: (data: any) => void) {
     const subscription = { key, callback };
     this.subscribers.push(subscription);
 
@@ -12,7 +19,11 @@ export class Observer {
       this.subscribers = this.subscribers.filter(subscriber => subscriber !== subscription);
     }
   }
-  pub(key: string, value: any) {
-    this.subscribers.find(subscriber => subscriber.key === key)?.callback(value);
+
+  pub(filter: Subscription, value: any) {
+    this.subscribers.filter(subscriber => {
+      return subscriber.key.id === filter.id &&
+        (typeof subscriber.key.change === "undefined" || subscriber.key.change === filter.change)
+    })?.forEach(subscriber => subscriber.callback(value));
   }
 }

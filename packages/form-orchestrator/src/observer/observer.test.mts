@@ -7,21 +7,22 @@ describe("#Observer()", () => {
 
     const spy = vitest.fn();
 
-    observer.sub("vitest", spy);
+    observer.sub({ id: "first_name" }, spy);
 
-    observer.pub("vitest", "Hello world!");
+    observer.pub({ id: "first_name" }, "John");
 
-    expect(spy).toHaveBeenLastCalledWith("Hello world!");
+    expect(spy).toHaveBeenLastCalledWith("John");
   });
+
   it("should be able to unsubsubscribe from an event", () => {
     const observer = new Observer();
 
     const spy = vitest.fn();
-    const unsub = observer.sub("vitest", spy);
+    const unsub = observer.sub({ id: "first_name" }, spy);
     unsub();
 
-    observer.pub("vitest", "Hello world!");
+    observer.pub({ id: "first_name" }, "John");
 
-    expect(spy).not.toHaveBeenLastCalledWith("Hello world!");
+    expect(spy).not.toHaveBeenLastCalledWith("John!");
   });
 })

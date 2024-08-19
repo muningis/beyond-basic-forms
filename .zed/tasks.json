@@ -1,0 +1,10 @@
+[
+  {
+    "label": "Test current test",
+    "command": "bun run test -t=\"${ZED_SYMBOL}\""
+  },
+  {
+    "label": "Test current file",
+    "command": "bun run test ${ZED_FILE}"
+  }
+]
